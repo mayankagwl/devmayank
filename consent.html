@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie Consent</title>
+</head>
+<style>
+    :root {
+        --background: #007af7;
+        --white-text: #fff;
+        --hover-text: #222;
+        --button-background: #fff;
+        --button-background-hover: #000;
+        --button-text: #007af7;
+
+    }
+
+    html,
+    body {
+        padding: 0;
+        margin: 0;
+        font-family: Poppins;
+        font-size: 100%;
+        background: url(https://source.unsplash.com/random);
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+
+    .cookie-container {
+        display: flex;
+        align-content: center;
+        align-items: center;
+        padding: 1rem 2rem;
+        background: var(--background);
+        color: var(--white-text);
+        position: fixed;
+        bottom: 0;
+        font-size: 1rem;
+        gap: 2rem;
+        opacity: 1;
+        visibility: visible;
+        flex-wrap: wrap;
+    }
+
+    .cookie-container.hide {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    .cookie-container a {
+        color: var(--white-color);
+    }
+
+    .cookie-container a:hover {
+        color: var(--hover-text);
+    }
+
+    .cookie-container .cookie-text {
+        flex: 8 768px;
+    }
+
+    .cookie-container .agree {
+        flex: 1 150px;
+        text-align: center;
+    }
+
+    .agree button {
+        background: var(--button-background);
+        color: var(--button-text);
+        border: none;
+        padding: 0.4rem 1.2rem;
+        cursor: pointer;
+        border-radius: 20px;
+        font-size: 1rem;
+    }
+
+    .agree button:hover {
+        background: var(--button-background-hover);
+        color: var(--white-text);
+    }
+</style>
+
+<body>
+    <div class="cookie-container hide">
+        <p class="cookie-text">
+            We use cookies and similar technologies that are necessary to operate the website. Additional cookies are
+            used to perform analysis of website usage. By continuing to use our website, consent to our use of cookies.
+            For more information, please read our <a href="#"> Privacy Policy.</a>
+        </p>
+        <div class="agree">
+            <button type="button">Sounds good!</button>
+        </div>
+    </div>
+</body>
+<script>
+    function getParameterByName(name, url = window.location.href) {
+        name = name.replace(/[\[\]]/g, '\\$&');
+        var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+    const cookieContainer = document.querySelector(".cookie-container");
+    const agreeBtn = document.querySelector(".agree button");
+    const redirectUri = getParameterByName("callback")
+    const prompt = getParameterByName("prompt")
+
+    if (prompt == "none") {
+        window.top.location.href = getParameterByName("callback")
+
+    } else {
+        setTimeout(() => {
+            cookieContainer.classList.remove("hide");
+        }, 1000);
+    }
+    agreeBtn.addEventListener("click", () => {
+        cookieContainer.classList.add("hide");
+        window.top.location.href = getParameterByName("callback")
+    });
+</script>
+
+</html>
