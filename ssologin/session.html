@@ -44,6 +44,7 @@
     <div id="loading"></div>
 </body>
 <script>
+    const ssoLoginDoamin = "https://account.devmayank.com"
     function getParameterByName(name, url = window.location.href) {
         name = name.replace(/[\[\]]/g, '\\$&');
         var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
@@ -127,7 +128,7 @@
 
     async function LoginSession() {
         try {
-            let resp = await fetch('/ssologin/login', {
+            let resp = await fetch(ssoLoginDoamin+'/ssologin/login', {
                 method: 'GET',
                 credentials: 'include'
             });
@@ -139,7 +140,7 @@
 
     async function SetLoginSession(accessToken) {
         try {
-            let resp = await fetch('/ssologin/settoken?token=' + accessToken, {
+            let resp = await fetch(ssoLoginDoamin+'/ssologin/settoken?token=' + accessToken, {
                 method: 'GET',
                 credentials: 'include'
             });
@@ -151,7 +152,7 @@
 
     async function LogoutSession() {
         try {
-            let resp = await fetch('/ssologin/logout', {
+            let resp = await fetch(ssoLoginDoamin+'/ssologin/logout', {
                 method: 'GET',
                 credentials: 'include'
             });
