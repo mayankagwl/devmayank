@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FedCM Iframe</title>
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<style>
+    body {
+        overflow: hidden;
+    }
+
+    #loading {
+        display: inline-block;
+        width: 22px;
+        height: 22px;
+        border: 3px solid rgba(255, 255, 255, .3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 1s ease-in-out infinite;
+        -webkit-animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+        to {
+            -webkit-transform: rotate(360deg);
+        }
+    }
+
+    @-webkit-keyframes spin {
+        to {
+            -webkit-transform: rotate(360deg);
+        }
+    }
+</style>
+
+<body>
+    <button id="sign-in" style="display: none;"
+        class="flex flex-row items-center space-x-2 w-full px-4 py-2 text-white text-sm font-semibold text-left bg-transparent hover:bg-blue-800 md:w-auto md:inline md:mt-0 md:ml-4 hover:bg-gray-200 focus:bg-blue-800 focus:outline-none focus:shadow-outline">
+        <span>Sign In</span>
+    </button>
+    <div id="loading"></div>
+</body>
+<script>
+    function getParameterByName(name, url = window.location.href) {
+        name = name.replace(/[\[\]]/g, '\\$&');
+        var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+    var action = getParameterByName("action")
+    var accessToken = getParameterByName("accessToken")
+    var signInUrl = getParameterByName("signin")
+    var refferer = document.referrer;
+    console.log({action, accessToken,signInUrl})
+    var signBtn = document.getElementById("sign-in");
+    var loading = document.getElementById("loading");
+    let hasAccess = false;
+    let prompt = false;
+    signBtn.addEventListener("click", async (ev) => {
+        let redirectToSignPage = false
+		let permission = await getPermission();
+        let storageAccess = await getRequestStorageAccess()
+        if (storageAccess) {
+            let access = await handleCookieAccessInit()
+            if (access) {
+                return
+            }
+        }
+		if (permission && permission.state === "granted") {
+			signInUrl += (signInUrl.indexOf("?")) === -1 ? "?prompt=none" : "&prompt=none"
+		}
+        window.top.location.href = signInUrl;
+    });
+    async function hasCookieAccess() {
+        if (!document.requestStorageAccess) {
+            return true;
+        }
+        if (await document.hasStorageAccess()) {
+            return true;
+        }
+        let permission = await getPermission();
+        console.log(permission.state)
+        if (!permission) {
+            return false,false
+        } else if (permission.state === "granted") {
+			prompt = "granted"
+            return await getRequestStorageAccess();
+        } else if (permission.state === "prompt") {
+            prompt = "prompt"
+            if (action === "login") {
+                loading.style.display = "none";
+                signBtn.style.display = "block";
+            } else {
+                loading.style.display = "none";
+                signBtn.style.display = "none";
+            }
+        } else if (permission.state === "denied") {
+			prompt = "denied"
+            return false
+        }
+        return false;
+    }
+
+    async function getPermission() {
+        let permission
+        try {
+            permission = await navigator.permissions.query({ name: 'storage-access' });
+        } catch (error) {
+            return false;
+        }
+        return permission;
+    }
+
+    async function getRequestStorageAccess() {
+        try {
+            await document.requestStorageAccess();
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    async function LoginSession() {
+        try {
+            let resp = await fetch('/ssologin/login', {
+                method: 'GET',
+                credentials: 'include'
+            });
+            return await resp.json()
+        } catch (error) {
+            return { token: null, isauthenticated: false };
+        }
+    }
+
+    async function SetLoginSession(accessToken) {
+        try {
+            let resp = await fetch('/ssologin/settoken?token=' + accessToken, {
+                method: 'GET',
+                credentials: 'include'
+            });
+            return await resp.json()
+        } catch (error) {
+            return { ok: true, istokenvalid: false };
+        }
+    }
+
+    async function LogoutSession() {
+        try {
+            let resp = await fetch('/ssologin/logout', {
+                method: 'GET',
+                credentials: 'include'
+            });
+            return await resp.json()
+        } catch (error) {
+            return { ok: true };
+        }
+    }
+
+    async function handleCookieAccessInit() {
+        hasAccess = await hasCookieAccess();
+        console.log({ hasAccess })
+		if (action==="prompt"){
+			parent.postMessage({ action:action, prompt: prompt }, refferer);
+        }else if (!hasAccess) {
+            if (prompt === "prompt") {
+                parent.postMessage({ action:action, prompt: prompt }, refferer);
+            }
+            return false
+        }else if (action === "login") {
+            let session = await LoginSession();
+            if (session && session.token && session.isauthenticated) {
+                parent.postMessage({ action:action,ssologin: session }, refferer);
+                loading.style.display = "none";
+                signBtn.style.display = "none";
+                return true
+            }
+            loading.style.display = "none";
+            signBtn.style.display = "block";
+        } else if (action === "logout") {
+            loading.style.display = "none";
+            signBtn.style.display = "none";
+            let session = await LogoutSession();
+            parent.postMessage({ action:action,ssologout: session }, refferer);
+        } else if (action === "settoken") {
+            loading.style.display = "none";
+            signBtn.style.display = "none";
+            let session = await SetLoginSession(accessToken);
+            parent.postMessage({ action:action, settoken: session}, refferer);
+        }
+
+        return false
+    }
+    handleCookieAccessInit()
+</script>
+
+</html>
