@@ -85,9 +85,11 @@
             return true;
         }
         let permission = await getPermission();
-        console.log(permission.state)
+        console.log("permission",permission.state)
         if (!permission) {
-            return false,false
+            loading.style.display = "none";
+            signBtn.style.display = "block";
+            return false
         } else if (permission.state === "granted") {
 			prompt = "granted"
             return await getRequestStorageAccess();
