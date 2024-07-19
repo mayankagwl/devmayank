@@ -87,6 +87,7 @@
         let permission = await getPermission();
         console.log("permission",permission.state)
         if (!permission) {
+            prompt = "notsupported"
             loading.style.display = "none";
             signBtn.style.display = "block";
             return false
@@ -169,7 +170,7 @@
         console.log({ hasAccess })
 		if (action==="prompt"){
 			parent.postMessage({ action:action, prompt: prompt }, refferer);
-        }else if (!hasAccess) {
+        }else if (!hasAccess &&  prompt !== "notsupported") {
             if (prompt === "prompt") {
                 parent.postMessage({ action:action, prompt: prompt }, refferer);
             }
