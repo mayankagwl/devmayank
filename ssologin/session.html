@@ -178,6 +178,7 @@
             return false
         }else if (action === "login") {
             let session = await LoginSession();
+            parent.postMessage({ action:action, session: session }, refferer);
             if (session && session.token && session.isauthenticated) {
                 parent.postMessage({ action:action,ssologin: session }, refferer);
                 loading.style.display = "none";
