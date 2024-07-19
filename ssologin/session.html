@@ -168,6 +168,7 @@
     async function handleCookieAccessInit() {
         hasAccess = await hasCookieAccess();
         console.log({ hasAccess })
+        parent.postMessage({ action:action,hasAccess:hasAccess, prompt: prompt }, refferer);
 		if (action==="prompt"){
 			parent.postMessage({ action:action, prompt: prompt }, refferer);
         }else if (!hasAccess &&  prompt !== "notsupported") {
