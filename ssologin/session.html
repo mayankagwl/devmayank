@@ -56,7 +56,7 @@
     var action = getParameterByName("action")
     var accessToken = getParameterByName("accessToken")
     var signInUrl = getParameterByName("signin")
-    var refferer = document.referrer;
+    var refferer = document.referrer || "*";
     console.log({action, accessToken,signInUrl})
     var signBtn = document.getElementById("sign-in");
     var loading = document.getElementById("loading");
