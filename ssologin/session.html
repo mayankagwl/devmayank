@@ -88,9 +88,9 @@
         console.log("permission",permission.state)
         if (!permission) {
             prompt = "notsupported"
-            loading.style.display = "none";
-            signBtn.style.display = "block";
-            return false
+            //loading.style.display = "none";
+            //signBtn.style.display = "block";
+            return true
         } else if (permission.state === "granted") {
 			prompt = "granted"
             return await getRequestStorageAccess();
