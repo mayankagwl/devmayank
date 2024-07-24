@@ -11,7 +11,7 @@ function getParamByName(name){
 }
 
 const ssoLoginUtil = {
-    parent: document.referrer,
+    parent: "*",
     action : getParamByName("action"),
     accessToken :getParamByName("access_token"),
     signInUrl : getParamByName("signin"),
