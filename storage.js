@@ -10,7 +10,7 @@ function getParamByName(name){
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
 
-const utility = {
+const ssoLoginUtil = {
     parent: document.referrer,
     action : getParamByName("action"),
     accessToken :getParamByName("access_token"),
@@ -18,7 +18,7 @@ const utility = {
     signBtn : document.getElementById("sign-in"),
     loading : document.getElementById("loading"),
     postToparent: (key, message) => {
-        parent.postMessage(Object.assign({ action:utility.action },{[key]:message}), utility.parent);
+        parent.postMessage(Object.assign({ action:ssoLoginUtil.action },{[key]:message}), ssoLoginUtil.parent);
     },
     getStorageAccessPermission: async () => {
         let permission
@@ -51,11 +51,11 @@ const utility = {
         }
     },
     setLoginSession: async() => {
-        if(!utility.accessToken){
+        if(!ssoLoginUtil.accessToken){
             return { ok: false, istokenvalid: false };
         }
         try {
-            let resp = await fetch(siteUrl+'/ssologin/settoken?token='+utility.accessToken, {
+            let resp = await fetch(siteUrl+'/ssologin/settoken?token='+ssoLoginUtil.accessToken, {
                 method: 'GET',
                 credentials: 'include'
             });
@@ -76,7 +76,7 @@ const utility = {
         }
     },
     isLoginSessionValid : ()  => {
-        let loginSession = utility.getLoginSession()
+        let loginSession = ssoLoginUtil.getLoginSession()
         if (loginSession.token && loginSession.isauthenticated){
             return loginSession
         }
@@ -86,14 +86,14 @@ const utility = {
         ev.preventDefault();
         let storageAccess = await getRequestStorageAccess()
         if(storageAccess) {
-            let loginSession = utility.isLoginSessionValid()
+            let loginSession = ssoLoginUtil.isLoginSessionValid()
             if (loginSession) {
-                utility.postToparent("login",loginSession);
+                ssoLoginUtil.postToparent("login",loginSession);
                 return;
             }
         }
-        let permission = await utility.getStorageAccessPermission(); 
-        let signInUrl = utility.signInUrl;
+        let permission = await ssoLoginUtil.getStorageAccessPermission(); 
+        let signInUrl = ssoLoginUtil.signInUrl;
         if (permission === "granted" || permission === "not_supported"){
             signInUrl += (signInUrl.indexOf("?")) === -1 ? "?prompt=none" : "&prompt=none"
         }
@@ -113,51 +113,51 @@ const utility = {
         if (prompt === "not_supported") {
             return true,prompt
         }else if (prompt === "granted") {
-            return await utility.getRequestStrorageAccess(), prompt;
+            return await ssoLoginUtil.getRequestStrorageAccess(), prompt;
         }else if (prompt === "prompt") {
             return false, prompt
         }
         return false, prompt
     },
     showLoading: () => {
-        utility.loading.style.display = "block";
+        ssoLoginUtil.loading.style.display = "block";
     },
     hideLoading: () => {
-        utility.loading.style.display = "none";
+        ssoLoginUtil.loading.style.display = "none";
     },
     showSignInBtn: () => {
-        utility.loading.style.display = "none";
-        utility.signBtn.style.display = "block";
+        ssoLoginUtil.loading.style.display = "none";
+        ssoLoginUtil.signBtn.style.display = "block";
     },
     hideSignInBtn: () => {
-        utility.loading.style.display = "block";
-        utility.signBtn.style.display = "none";
+        ssoLoginUtil.loading.style.display = "block";
+        ssoLoginUtil.signBtn.style.display = "none";
     },
     initilizeFrame: async () => {
         let hasAccess, state;
-        utility.showLoading()
-        hasAccess, state = await utility.hasStorageAccess();
+        ssoLoginUtil.showLoading()
+        hasAccess, state = await ssoLoginUtil.hasStorageAccess();
         if(!hasAccess && state==="prompt" && action=="login") {
-            utility.showSignInBtn()
-            utility.postToparent("prompt",{prompt});
+            ssoLoginUtil.showSignInBtn()
+            ssoLoginUtil.postToparent("prompt",{prompt});
             return
-        }else if (utility.action=="login") {
-            let loginSession = await utility.isLoginSessionValid();
+        }else if (ssoLoginUtil.action=="login") {
+            let loginSession = await ssoLoginUtil.isLoginSessionValid();
             if (loginSession){
-                utility.hideLoading()
-                utility.postToparent("login",loginSession);
+                ssoLoginUtil.hideLoading()
+                ssoLoginUtil.postToparent("login",loginSession);
                 return;
             }
-            utility.showSignInBtn()
-        } else if (utility.action=="logout") {
-            let logoutSession = await utility.logoutSession()
-            utility.hideLoading()
-            utility.postToparent("logout",logoutSession);
+            ssoLoginUtil.showSignInBtn()
+        } else if (ssoLoginUtil.action=="logout") {
+            let logoutSession = await ssoLoginUtil.logoutSession()
+            ssoLoginUtil.hideLoading()
+            ssoLoginUtil.postToparent("logout",logoutSession);
             return;
-        } else if (utility.action=="settoken"){
-            let settokenSession = await utility.setLoginSession(utility.accessToken)
-            utility.hideLoading()
-            utility.postToparent("settoken",settokenSession);
+        } else if (ssoLoginUtil.action=="settoken"){
+            let settokenSession = await ssoLoginUtil.setLoginSession(ssoLoginUtil.accessToken)
+            ssoLoginUtil.hideLoading()
+            ssoLoginUtil.postToparent("settoken",settokenSession);
             return;
         }
     },
