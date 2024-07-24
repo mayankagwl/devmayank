@@ -108,7 +108,7 @@ const ssoLoginUtil = {
         if (await document.hasStorageAccess()) {
             return true, prompt;
         }
-        let permission = await getPermission();
+        let permission = await ssoLoginUtil.getStorageAccessPermission(); 
         prompt = permission.state
         if (prompt === "not_supported") {
             return true,prompt
