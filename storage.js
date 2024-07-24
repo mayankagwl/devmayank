@@ -1,5 +1,5 @@
 const pageUrl = window.location.href;
-const siteUrl = "https://dev-sso.devhub.lrinternal.com"
+const siteUrl = "https://account.devmayank.com"
 
 function getParamByName(name){
     name = name.replace(/[\[\]]/g, '\\$&');
@@ -18,7 +18,11 @@ const ssoLoginUtil = {
     signBtn : document.getElementById("sign-in"),
     loading : document.getElementById("loading"),
     postToparent: (key, message) => {
-        parent.postMessage(Object.assign({ action:ssoLoginUtil.action },{[key]:message}), ssoLoginUtil.parent);
+        let postData = JSON.parse(JSON.stringify({
+            action: ssoLoginUtil.action,
+            [key]: message
+        }))
+        parent.postMessage(postData, ssoLoginUtil.parent)
     },
     getStorageAccessPermission: async () => {
         let permission
@@ -75,8 +79,8 @@ const ssoLoginUtil = {
             return { ok: false };
         }
     },
-    isLoginSessionValid : ()  => {
-        let loginSession = ssoLoginUtil.getLoginSession()
+    isLoginSessionValid : async ()  => {
+        let loginSession = await ssoLoginUtil.getLoginSession()
         if (loginSession.token && loginSession.isauthenticated){
             return loginSession
         }
@@ -84,17 +88,18 @@ const ssoLoginUtil = {
     },
     signInBtnClickEventListener: async (ev) => {
         ev.preventDefault();
-        let storageAccess = await getRequestStorageAccess()
+        let storageAccess = await ssoLoginUtil.getRequestStrorageAccess()
         if(storageAccess) {
-            let loginSession = ssoLoginUtil.isLoginSessionValid()
+            let loginSession = await ssoLoginUtil.isLoginSessionValid()
             if (loginSession) {
+                ssoLoginUtil.hideSignInBtn();
                 ssoLoginUtil.postToparent("login",loginSession);
                 return;
             }
         }
         let permission = await ssoLoginUtil.getStorageAccessPermission(); 
         let signInUrl = ssoLoginUtil.signInUrl;
-        if (permission === "granted" || permission === "not_supported"){
+        if (permission.state === "granted" || permission.state === "not_supported"){
             signInUrl += (signInUrl.indexOf("?")) === -1 ? "?prompt=none" : "&prompt=none"
         }
         window.top.location.href = signInUrl;
@@ -133,16 +138,19 @@ const ssoLoginUtil = {
         ssoLoginUtil.loading.style.display = "block";
         ssoLoginUtil.signBtn.style.display = "none";
     },
-    initilizeFrame: async () => {
+    initilizeFrame: async (refferer) => {
+       ssoLoginUtil.parent = refferer;
+       ssoLoginUtil.signBtn.addEventListener("click",ssoLoginUtil.signInBtnClickEventListener)
         let hasAccess, state;
         ssoLoginUtil.showLoading()
         hasAccess, state = await ssoLoginUtil.hasStorageAccess();
-        if(!hasAccess && state==="prompt" && action=="login") {
+        if(!hasAccess && state==="prompt" && ssoLoginUtil.action=="login") {
             ssoLoginUtil.showSignInBtn()
-            ssoLoginUtil.postToparent("prompt",{prompt});
+            ssoLoginUtil.postToparent("prompt",{state});
             return
         }else if (ssoLoginUtil.action=="login") {
             let loginSession = await ssoLoginUtil.isLoginSessionValid();
+            console.log("loginSession", JSON.stringify(loginSession))
             if (loginSession){
                 ssoLoginUtil.hideLoading()
                 ssoLoginUtil.postToparent("login",loginSession);
@@ -150,7 +158,7 @@ const ssoLoginUtil = {
             }
             ssoLoginUtil.showSignInBtn()
         } else if (ssoLoginUtil.action=="logout") {
-            let logoutSession = await ssoLoginUtil.logoutSession()
+            let logoutSession = await ssoLoginUtil.deleteLoginSession()
             ssoLoginUtil.hideLoading()
             ssoLoginUtil.postToparent("logout",logoutSession);
             return;
@@ -160,12 +168,17 @@ const ssoLoginUtil = {
             ssoLoginUtil.postToparent("settoken",settokenSession);
             return;
         }
+        ssoLoginUtil.postToparent("status",{state,hasAccess});
     },
 
     initilizeParent : () => {
         window.addEventListener('message',function (ev) {
-            this.dispatchEvent(new CustomEvent("ssologin", ev.data))
+            this.dispatchEvent(new CustomEvent("ssologin", {
+                bubbles: true,
+                detail: ev.data
+            }))
         });
     }
 }
+window.ssoLoginUtil = ssoLoginUtil;
 
