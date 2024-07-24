@@ -174,7 +174,7 @@ const ssoLoginUtil = {
     initilizeParent : () => {
         window.addEventListener('message',function (ev) {
             this.dispatchEvent(new CustomEvent("ssologin", {
-                bubbles: true,
+                //bubbles: true,
                 detail: ev.data
             }))
         });
