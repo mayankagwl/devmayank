@@ -142,6 +142,11 @@ const ssoLoginUtil = {
         ssoLoginUtil.signBtn.style.display = "none";
     },
     initilizeFrame: async (refferer) => {
+        window.addEventListener('message', async (ev) => {
+            console.log(JSON.stringify(ev.data))
+            ssoLoginUtil.signBtn.dispatchEvent(new Event('click', { 'bubbles': true }));
+            //ssoLoginUtil.signBtn.click()
+        });
         ssoLoginUtil.signBtn.addEventListener("click", ssoLoginUtil.signInBtnClickEventListener)
         let hasAccess, state;
         ssoLoginUtil.showLoading()
@@ -181,5 +186,7 @@ const ssoLoginUtil = {
         });
     }
 }
+
+
 window.ssoLoginUtil = ssoLoginUtil;
 
