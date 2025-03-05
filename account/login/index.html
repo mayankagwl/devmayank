@@ -10,6 +10,7 @@
         let win = window.open("https://abc.devmayank.com/account/login/popup", "socialpopup", "noopener=no")
         window.addEventListener("message", (event) => {
             console.log("Message:", event?.data);
+            document.getElementById("token").innerHTML = event.data
             win.close()
         });
 
@@ -25,6 +26,8 @@
 
 
 <body>
+
+    <div id="token"></div>
 
 </body>
 
