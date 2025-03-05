@@ -2339,7 +2339,7 @@ function LoginRadiusUtility (module, optionsList) {
       if (module.options.debugMode) {
         loc = 'yes';
       }
-      var win = window.open(_url, '_blank', 'noopener=no,location=' + loc);
+      var win = window.open(_url, '_blank', 'noopener=no,popup,location=' + loc);
       win.addEventListener('loadstop', function (event) {
         var getParamValue = function (param) {
           var regex = new RegExp('[\\?&]' + param + '=([^&#]*)');
