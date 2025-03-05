@@ -5,23 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-
-    <script>
-        let win = window.open("https://abc.devmayank.com/account/login/popup", "socialpopup", "noopener=no")
-        window.addEventListener("message", (event) => {
-            console.log("Message:", event?.data);
-            document.getElementById("token").innerHTML = event.data
-            win.close()
-        });
-
-        const channel = new BroadcastChannel("lr-social-oauth2");
-        channel.addEventListener("message", (event) => {
-            if (event.data) {
-                console.log("channel",event.data)
-            }
-        })
-
-    </script>
 </head>
 
 
@@ -30,5 +13,21 @@
     <div id="token"></div>
 
 </body>
+<script>
+    let win = window.open("https://abc.devmayank.com/account/login/popup", "socialpopup", "location=no")
+    window.addEventListener("message", (event) => {
+        console.log("Message:", event?.data);
+        document.getElementById("token").innerHTML = event.data
+        win.close()
+    });
+
+    const channel = new BroadcastChannel("lr-social-oauth2");
+    channel.addEventListener("message", (event) => {
+        if (event.data) {
+            console.log("channel",event.data)
+        }
+    })
+
+</script>
 
 </html>
