@@ -10,6 +10,7 @@
         let win = window.open("/account/login/popup", "socialpopup", "noopener=no;popup")
         window.addEventListener("message", (event) => {
             console.log("Message:", event?.data);
+            win.close()
         });
 
         const channel = new BroadcastChannel("lr-social-oauth2");
