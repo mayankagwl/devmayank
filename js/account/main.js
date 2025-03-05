@@ -69,7 +69,7 @@ function HandleSuccessResponse(response) {
 		return
 	}
 
-	window.location.href = `/account/login/auth.html?returnto=${returnTo}&token=${response.access_token}&webview=${webview}&`
+	window.location.href = `/account/login/auth?returnto=${returnTo}&token=${response.access_token}&webview=${webview}`
 
 }
 
