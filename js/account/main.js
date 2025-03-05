@@ -98,6 +98,13 @@ LRObject.util.ready(function () {
 		});
 	}, 1500);
 
+	const channel = new BroadcastChannel("lr-social-oauth");
+	channel.addEventListener("message", (event) => { 
+		if (event.data){
+			LRObject.api.socialLogin({ token: event.data }, window.lr_raas_settings.sociallogin.success, window.lr_raas_settings.sociallogin.error);
+		}
+	})
+
 
 
 })
