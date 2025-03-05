@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>LoginRadius Login </title>
+</head>
+
+<body>
+    <script type="text/javascript">
+
+        function handler() {
+            console.log("window.opener", window.opener ? 1 : 0)
+            console.log("window.parent", window.parent ? 1 : 0)
+            try {
+                window.opener.passToken('67c84109-a293-4bc1-9165-27e80b22020d', 'https:\/\/devmayank.com\/account\/login\/?returnto=myapp:\/\/callback');
+                window.open('', '_self', '');
+                window.close();
+            }
+            catch (error) {
+
+                if (window.opener) {
+                    window.opener.postMessage('67c84109-a293-4bc1-9165-27e80b22020d', 'https:\/\/devmayank.com\/account\/login\/?returnto=myapp:\/\/callback');
+                    //window.open('', '_self', '');
+
+                    window.close();
+                } else if (window.parent) {
+
+                    window.parent.postMessage('67c84109-a293-4bc1-9165-27e80b22020d', 'https:\/\/devmayank.com\/account\/login\/?returnto=myapp:\/\/callback');
+                    //window.open('', '_self', '');
+                    window.close();
+                } else {
+                    const channel = new BroadcastChannel('lr-social-oauth2');
+                    channel.postMessage('67c84109-a293-4bc1-9165-27e80b22020d');
+                    //window.open('', '_self', '');
+                    window.close();
+                }
+            }
+        }
+
+        setTimeout(() => {
+            handler();
+        }, 10000);
+
+    </script>
+</body>
+
+</html>
