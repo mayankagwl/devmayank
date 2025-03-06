@@ -1,34 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap"
+      rel="stylesheet"
+    />
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
+    <link rel="stylesheet" href="/fonts/icomoon/style.css" />
 
+    <link rel="stylesheet" href="/css/owl.carousel.min.css" />
 
-<body>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
 
-    <div id="token"></div>
+    <!-- Style -->
+    <link rel="stylesheet" href="/css/style.css" />
+    <script type="text/javascript" src="/js/LoginRadiusV2.js"></script>
 
-</body>
-<script>
-    let win = window.open("https://abc.devmayank.com/account/login/popup", "socialpopup", "location=no")
-    window.addEventListener("message", (event) => {
-        console.log("Message:", event?.data);
-        document.getElementById("token").innerHTML = event.data
-        window.location.href = "myapp://callback?token="+event.data
-    });
+    <title>Login #10</title>
+  </head>
+  <body>
+    <div class="content">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-md-5">
+            <!-- <div id="socialogininterface" class="socialogininterface"></div> -->
+            <div id="sociallogin-container"></div>
+            <span class="d-block text-center my-4 text-muted">
+              or sign in with</span
+            >
+            <div id ="socialogininterface" class="social-login text-center socialogininterface">
+            </div>
+          </div>
+          <div class="col-md-2 text-center">&mdash; or &mdash;</div>
+          <div class="col-md-5 contents">
+            <div class="form-block">
+              <div class="mb-4">
+                <h3>Sign In</h3>
+                <p class="mb-4">
+                  Lorem ipsum dolor sit amet elit. Sapiente sit aut eos
+                  consectetur adipisicing.
+                </p>
+              </div>
+              <div id="login-container" style="display: none;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    const channel = new BroadcastChannel("lr-social-oauth2");
-    channel.addEventListener("message", (event) => {
-        if (event.data) {
-            console.log("channel",event.data)
-            window.location.href = "myapp://callback?token="+event.data
-        }
-    })
-
-</script>
-
+    <script src="/js/jquery-3.3.1.min.js"></script>
+    <script src="/js/popper.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/account/main.js"></script>
+  </body>
+  <script type="text/html" id="loginradiuscustom_tmpl">
+    <a class="lr-provider-label btn btn-block facebook" onclick="return LRObject.util.openWindow('<#=Endpoint #>');" href="javascript:void(0);" title="<#= Name #>" alt="Sign in with <#=Name #>">
+      <span class="mr-3"><#=Name#></span>
+    </a>
+    </script>
 </html>
