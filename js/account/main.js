@@ -13,7 +13,7 @@ commonOptions.hashTemplate = true;
 commonOptions.debugMode = true;
 commonOptions.accessTokenResponse = true;
 commonOptions.formRenderDelay = '12'
-//commonOptions.callbackType = "hash"
+commonOptions.callbackType = "hash"
 // commonOptions.sott ="<Get_Sott>";
 commonOptions.verificationUrl = encodeURIComponent(window.location); //Change as per requirement
 
@@ -102,6 +102,7 @@ LRObject.util.ready(function () {
 		if (event.key === "authToken") {
 			console.log("New auth token received:", event.newValue);
 			document.getElementById("token").innerHTML = event.data
+
 			window.location.href = "myapp://callback?token="+event.newValue
 		}
 	});
