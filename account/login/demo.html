@@ -35,13 +35,13 @@
 		}
 	});
 
-    // const channel = new BroadcastChannel("lr-social-oauth2");
-    // channel.addEventListener("message", (event) => {
-    //     if (event.data) {
-    //         console.log("channel",event.data)
-    //         window.location.href = "myapp://callback?token="+event.data
-    //     }
-    // })
+    const channel = new BroadcastChannel("lr-social-oauth2");
+    channel.addEventListener("message", (event) => {
+        if (event.data) {
+            console.log("channel",event.data)
+            window.location.href = "myapp://callback?token="+event.data
+        }
+    })
 
 </script>
 
