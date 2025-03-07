@@ -98,6 +98,14 @@ LRObject.util.ready(function () {
 		});
 	}, 1500);
 
+	window.addEventListener("storage", (event) => {
+		if (event.key === "authToken") {
+			console.log("New auth token received:", event.newValue);
+			document.getElementById("token").innerHTML = event.data
+			window.location.href = "myapp://callback?token="+event.newValue
+		}
+	});
+
 	// const channel = new BroadcastChannel("lr-social-oauth");
 	// channel.addEventListener("message", (event) => { 
 	// 	if (event.data){
