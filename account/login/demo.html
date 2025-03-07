@@ -26,6 +26,15 @@
         window.location.href = "myapp://callback?token="+event.data
     });
 
+    window.addEventListener("storage", (event) => {
+		if (event.key === "authToken") {
+			console.log("New auth token received:", event.newValue);
+			document.getElementById("token").innerHTML = event.data
+			
+			window.location.href = "myapp://callback?token="+event.newValue
+		}
+	});
+
     // const channel = new BroadcastChannel("lr-social-oauth2");
     // channel.addEventListener("message", (event) => {
     //     if (event.data) {
